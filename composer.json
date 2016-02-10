@@ -1,5 +1,18 @@
 {
+    "name": "nystudio107/seomatic",
+    "description": "A turnkey SEO implementation for Craft CMS that is comprehensive, powerful, and flexible",
+    "type": "craft-plugin",
+    "authors": [
+      {
+        "name": "Andrew Welch",
+        "email": "andrew@nystudio107.com"
+      },
+      {
+        "name": "Maarten de Graaf",
+        "email": "maarten@webtraders.nl"
+      }
+    ],
     "require": {
-        "crodas/text-rank" : "dev-master"
+      "composer/installers": "~1.0",
     }
 }
