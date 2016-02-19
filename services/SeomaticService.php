@@ -587,11 +587,15 @@ class SeomaticService extends BaseApplicationComponent
 /* -- Set up the title prefix and suffix */
 
         $titlePrefix = "";
+/* -- We now do this in sanitizeMetaVars() so this can be changed in Twig just like the seoTitle
         if ($siteMeta['siteSeoTitlePlacement'] == "before")
             $titlePrefix =  $siteMeta['siteSeoName'] . " " . $siteMeta['siteSeoTitleSeparator'] . " ";
+*/
         $titleSuffix = "";
+/* -- We now do this in sanitizeMetaVars() so this can be changed in Twig just like the seoTitle
         if ($siteMeta['siteSeoTitlePlacement'] == "after")
             $titleSuffix = " " . $siteMeta['siteSeoTitleSeparator'] . " " . $siteMeta['siteSeoName'];
+*/
 
 /* -- Add in the Twitter Card settings to the meta */
 
@@ -1013,17 +1017,17 @@ class SeomaticService extends BaseApplicationComponent
         $identity['personOwnerGender'] = $settings['personOwnerGender'];
         $identity['personOwnerBirthPlace'] = $settings['personOwnerBirthPlace'];
 
-        $identity['localBusinessCreatorOpeningHours'] = $settings['localBusinessCreatorOpeningHours'];
+        $identity['localBusinessOwnerOpeningHours'] = $settings['localBusinessOwnerOpeningHours'];
 
 /* -- Handle the opening hours specification */
 
         $days = array("Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday");
         $openingHours = array();
-        if (isset($identity['localBusinessCreatorOpeningHours']) && is_array($identity['localBusinessCreatorOpeningHours']))
+        if (isset($identity['localBusinessOwnerOpeningHours']) && is_array($identity['localBusinessOwnerOpeningHours']))
         {
-            craft()->seomatic->convertTimes($identity['localBusinessCreatorOpeningHours']);
+            craft()->seomatic->convertTimes($identity['localBusinessOwnerOpeningHours']);
             $index = 0;
-            foreach ($identity['localBusinessCreatorOpeningHours'] as $hours)
+            foreach ($identity['localBusinessOwnerOpeningHours'] as $hours)
             {
                 $openTime = "";
                 $closeTime = "";
@@ -1046,7 +1050,7 @@ class SeomaticService extends BaseApplicationComponent
         }
         $openingHours = array_filter($openingHours);
         $identity['openingHoursSpecification'] = $openingHours;
-        if (count($identity['openingHoursSpecification']) == 1)
+        if (count($identity['openingHoursSpecification']) <= 1)
             unset($identity['openingHoursSpecification']);
 
         $identity['corporationOwnerTickerSymbol'] = $settings['corporationOwnerTickerSymbol'];
@@ -1121,8 +1125,18 @@ class SeomaticService extends BaseApplicationComponent
         if (count($identityJSONLD['address']) == 1)
             unset($identityJSONLD['address']);
 
-        if (isset($identity['localBusinessCreatorOpeningHours']))
-            $identityJSONLD['openingHoursSpecification'] = $identity['openingHoursSpecification'];
+/* -- This needs to be an additional field if we implement it
+        if ($identity['genericOwnerTelephone'])
+        {
+            $contactPoint = array(
+                "type" => "ContactPoint",
+                "telephone" => $identity['genericOwnerTelephone'],
+                "contactType" => "Contact",
+            );
+            $contactPoint = array_filter($contactPoint);
+            $identityJSONLD['contactPoint'] = array($contactPoint);
+        }
+*/
 
 /* -- Settings for all person Identity types */
 
@@ -1160,7 +1174,6 @@ class SeomaticService extends BaseApplicationComponent
                 "logo" =>  $locImage,
                 "url" =>  $identity['genericOwnerUrl'],
                 "sameAs" =>  $sameAs,
-                "openingHoursSpecification" => $identity['openingHoursSpecification'],
                 "geo" => $geo,
                 "address" => $address,
             );
@@ -1200,6 +1213,13 @@ class SeomaticService extends BaseApplicationComponent
             break;
 
             case 'LocalBusiness':
+                if (isset($identity['openingHoursSpecification']))
+                {
+                    if (isset($identityJSONLD['location']))
+                        $identityJSONLD['openingHoursSpecification'] = $identity['openingHoursSpecification'];
+                    if (isset($identityJSONLD['location']))
+                        $identityJSONLD['location']['openingHoursSpecification'] = $identity['openingHoursSpecification'];
+                }
             break;
 
             case 'NGO':
@@ -1399,12 +1419,25 @@ class SeomaticService extends BaseApplicationComponent
         if (count($creatorJSONLD['address']) == 1)
             unset($creatorJSONLD['address']);
 
+/* -- This needs to be an additional fieldtype if we implement it
+        if ($creator['genericCreatorTelephone'])
+        {
+            $contactPoint = array(
+                "type" => "ContactPoint",
+                "telephone" => $creator['genericCreatorTelephone'],
+                "contactType" => "Contact",
+            );
+            $contactPoint = array_filter($contactPoint);
+            $creatorJSONLD['contactPoint'] = array($contactPoint);
+        }
+*/
+
 /* -- Settings for all person Creator types */
 
         if ($creator['siteCreatorType'] == "Person")
         {
-            $creatorJSONLD['gender'] = $creator['personOwnerGender'];
-            $creatorJSONLD['birthPlace'] = $creator['personOwnerBirthPlace'];
+            $creatorJSONLD['gender'] = $creator['personCreatorGender'];
+            $creatorJSONLD['birthPlace'] = $creator['personCreatorBirthPlace'];
         }
 
 /* -- Settings for all organization Creator types */
@@ -1930,6 +1963,20 @@ class SeomaticService extends BaseApplicationComponent
         $seomaticIdentity = $metaVars['seomaticIdentity'];
         $seomaticSocial = $metaVars['seomaticSocial'];
         $seomaticCreator = $metaVars['seomaticCreator'];
+
+/* -- Set up the title prefix and suffix for the OpenGraph and Twitter titles */
+
+        $titlePrefix = "";
+        if ($seomaticSiteMeta['siteSeoTitlePlacement'] == "before")
+            $titlePrefix =  $seomaticSiteMeta['siteSeoName'] . " " . $seomaticSiteMeta['siteSeoTitleSeparator'] . " ";
+        $titleSuffix = "";
+        if ($seomaticSiteMeta['siteSeoTitlePlacement'] == "after")
+            $titleSuffix = " " . $seomaticSiteMeta['siteSeoTitleSeparator'] . " " . $seomaticSiteMeta['siteSeoName'];
+
+        if (isset($seomaticMeta['twitter']))
+            $seomaticMeta['twitter']['title'] = $titlePrefix . $seomaticMeta['seoTitle'] . $titleSuffix;
+        if (isset($seomaticMeta['og']))
+            $seomaticMeta['og']['title'] = $titlePrefix . $seomaticMeta['seoTitle'] . $titleSuffix;
 
 /* -- Truncate seoTitle, seoDescription, and seoKeywords to recommended values */
 

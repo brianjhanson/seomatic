@@ -79,7 +79,7 @@ You can also dynamically change any of these SEO Meta fields in your Twig templa
 
 * **robots.txt Template** - A `robots.txt` file is a file at the root of your site that indicates those parts of your site you don’t want accessed by search engine crawlers. The file uses the [Robots Exclusion Standard](http://en.wikipedia.org/wiki/Robots_exclusion_standard#About_the_standard), which is a protocol with a small set of commands that can be used to indicate access to your site by section and by specific kinds of web crawlers (such as mobile crawlers vs desktop crawlers).
 
-SEOmatic automatically handles requests for `/humans.txt`. For this to work, make sure that you do not have an actual `robots.txt` file in your `public/` folder (because that will take precedence).
+SEOmatic automatically handles requests for `/robots.txt`. For this to work, make sure that you do not have an actual `robots.txt` file in your `public/` folder (because that will take precedence).
 
 If you are running Nginx, make sure that you don't have a line like:
 
@@ -87,7 +87,7 @@ If you are running Nginx, make sure that you don't have a line like:
     
 ...in your config file.  A directive like this will prevent SEOmatic from being able to service the request for `/robots.txt`.  If you do have a line like this in your config file, just comment it out, and restart Nginx with `sudo nginx -s reload`.
 
-The **Preview Humans.txt** button lets you preview what your rendered Humans.txt file will look like.
+The **Preview Robots.txt** button lets you preview what your rendered robots.txt file will look like.
 
 You can use any Craft `environmentVariables` in these fields in addition to static text, e.g.:
 
@@ -1530,12 +1530,26 @@ Some things to do, and ideas for potential features:
 * [bug] Get the Template Metas implemented with full `locale` support, so the settings can all be per-locale based
 * [bug] Enforce *required fields on the various settings pages in the Admin CP by doing proper validation
 * [bug] The `foundingDate` fields probably should be dateTimeField types on the Settings pages
+* [bug] Figure out a way to have SEOmatic FieldTypes "just work" when added to a new section with existing entries (no field data is saved at that point, so the defaults don't work)
+* [bug] Support adding additional OpenGraph tags without the `og:` prefix (this will require retooling the core JSON-LD engine to add quotes around array keys)
+* [feature] Add support for additional OpenGraph types (conspicuously, "Article")
+* [feature] Add support for `og:image:type`, `og:image:width`, and `og:image:height`
 * [feature] Add the ability to analyze a page for content vs. keywords for the SEO Template Metas, "just like Yoast"
 * [feature] Change the preview to a live preview when editing things in SEOmatic
 * [feature] Provide SiteMap functionality.  Yes, it's SEO-related, but seems like it might be better to keep SEOmatic focused (?)
 * [feature] Provide Redirect functionality.  Yes, it's SEO-related, but seems like it might be better to keep SEOmatic focused (?)
 
 ## Changelog
+
+### 1.1.3 -- 2016.02.17
+
+* [Fixed] Fixed some typos in SEOmatic & the docs re: `robots.txt`
+* [Fixed] The Google Analytics script no longer renders if the Google Analytics Tracking ID field is empty
+* [Fixed] Fixed an issue with console errors on the backend with the SEOmatic FieldType
+* [Fixed] OpeningHours now only displays for LocalBusiness
+* [Added] SEOmatic now processes adding the SEO Site Name to the `og` and `twitter` titles just before rendering, so you can do things like change the `seomaticSiteMeta.siteSeoTitlePlacement` via Twig, and it'll do the right thing
+* [Fixed] Fixed a PHP error if the Site Creator is a Person
+* [Improved] Updated the README.md
 
 ### 1.1.1 -- 2016.02.09
 

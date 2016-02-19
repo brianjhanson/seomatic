@@ -4,7 +4,7 @@ namespace Craft;
 class SeomaticController extends BaseController
 {
 
-    protected $allowAnonymous = array('actionRenderHumans');
+    protected $allowAnonymous = array('actionRenderHumans', 'actionRenderRobots');
 
 /* --------------------------------------------------------------------------------
     Render the humans.txt template
@@ -17,6 +17,12 @@ class SeomaticController extends BaseController
         if (!$locale)
             $locale = craft()->language;
         $metaVars = craft()->seomatic->getGlobals('', $locale);
+
+/* -- Tell Twig not to escape at all for this text template */
+
+        $twig = craft()->templates->getTwig();
+        $escaper = $twig->getExtension('escaper');
+        $escaper->setDefaultStrategy(false);
 
         if ($templatePath)
         {
@@ -48,6 +54,12 @@ class SeomaticController extends BaseController
         if (!$locale)
             $locale = craft()->language;
         $metaVars = craft()->seomatic->getGlobals('', $locale);
+
+/* -- Tell Twig not to escape at all for this text template */
+
+        $twig = craft()->templates->getTwig();
+        $escaper = $twig->getExtension('escaper');
+        $escaper->setDefaultStrategy(false);
 
         if ($templatePath)
         {
@@ -534,9 +546,9 @@ class SeomaticController extends BaseController
 
 /* -- LocalBusiness owner fields https://schema.org/LocalBusiness */
 
-        $hours = craft()->request->getPost('localBusinessCreatorOpeningHours', $record->localBusinessCreatorOpeningHours);
+        $hours = craft()->request->getPost('localBusinessOwnerOpeningHours', $record->localBusinessOwnerOpeningHours);
         craft()->seomatic->convertTimes($hours, craft()->getTimeZone());
-        $record->localBusinessCreatorOpeningHours = $hours;
+        $record->localBusinessOwnerOpeningHours = $hours;
 
 /* -- Corporation owner fields http://schema.org/Corporation */
 
