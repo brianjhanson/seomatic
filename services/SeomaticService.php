@@ -59,7 +59,7 @@ class SeomaticService extends BaseApplicationComponent
 
         if ($templatePath)
             {
-            $htmlText = craft()->templates->render($templatePath);
+            $htmlText = craft()->templates->render($templatePath, $metaVars);
             }
         else
             {
@@ -714,6 +714,7 @@ class SeomaticService extends BaseApplicationComponent
         unset($siteMeta['siteSeoImageId']);
         unset($siteMeta['siteTwitterCardType']);
         unset($siteMeta['siteOpenGraphType']);
+        unset($siteMeta['siteRobotsTxt']);
 
         unset($meta['twitterCardType']);
         unset($meta['openGraphType']);
