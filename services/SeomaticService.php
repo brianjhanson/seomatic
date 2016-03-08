@@ -18,6 +18,7 @@ class SeomaticService extends BaseApplicationComponent
     protected $cachedCreator = array();
     protected $cachedCreatorJSONLD = array();
     protected $cachedWebSiteJSONLD = array();
+    protected $renderedMetaVars = null;
 
 /* --------------------------------------------------------------------------------
     Render the all of the SEO Meta, caching it if possible
@@ -26,10 +27,13 @@ class SeomaticService extends BaseApplicationComponent
     public function renderSiteMeta($templatePath="", $metaVars=null, $locale)
     {
 
+        $this->renderedMetaVars = $metaVars;
+
 /* -- Cache the results for speediness; 1 query to rule them all */
 
         $shouldCache = ($metaVars != null);
-        $shouldCache = false;
+        if (craft()->config->get('devMode'))
+            $shouldCache = false;
         if ($shouldCache)
         {
             $cacheKey = 'seomatic_metacache_' . $this->getMetaHashStr($templatePath, $metaVars);
@@ -193,7 +197,17 @@ class SeomaticService extends BaseApplicationComponent
         {
             $this->sanitizeMetaVars($metaVars);
             $place = $metaVars['seomaticIdentity']['location'];
-            $htmlText = $this->renderJSONLD($place, $isPreview);
+            if (array_keys($place) !== range(0, count($place) - 1))
+            {
+                $htmlText = $this->renderJSONLD($place, $isPreview);
+            }
+            else
+            {
+                foreach($place as $places)
+                {
+                    $htmlText .= $this->renderJSONLD($places, $isPreview);
+                }
+            }
         }
         return $htmlText;
     } /* -- renderPlace */
@@ -578,7 +592,7 @@ class SeomaticService extends BaseApplicationComponent
     Set the Twitter Cards and Open Graph arrays for the meta
 -------------------------------------------------------------------------------- */
 
-    public function setSocialForMeta(&$meta, $siteMeta, $social, $helper, $locale)
+    public function setSocialForMeta(&$meta, $siteMeta, $social, $helper, $identity, $locale)
     {
 
         if ($meta)
@@ -650,6 +664,17 @@ class SeomaticService extends BaseApplicationComponent
                 $openGraph['see_also'] = $sameAs;
 
             $meta['og'] = $openGraph;
+
+/* -- Handle Open Graph articles */
+
+            if ($openGraph['type'] == "article")
+            {
+                $openGraphArticle = array();
+                $openGraphArticle['author'] = $identity['genericOwnerName'];
+                $openGraphArticle['publisher'] = $identity['genericOwnerName'];
+                $openGraphArticle['tag'] = array_map('trim', explode(',', $meta['seoKeywords']));
+                $meta['article'] = $openGraphArticle;
+            }
         }
     } /* -- setSocialForMeta*/
 
@@ -659,6 +684,8 @@ class SeomaticService extends BaseApplicationComponent
 
     public function getGlobals($forTemplate="", $locale)
     {
+        if ($this->renderedMetaVars)
+            return $this->renderedMetaVars;
         if (!$locale)
             $locale = craft()->language;
 
@@ -674,13 +701,11 @@ class SeomaticService extends BaseApplicationComponent
 
         $siteUrl = craft()->getSiteUrl();
         $requestUrl = craft()->request->url;
-        /*
         if (($siteUrl[strlen($siteUrl) -1] == '/') && ($requestUrl[0] == '/'))
         {
             $siteUrl = rtrim($siteUrl, '/');
         }
-        */
-        $fullUrl = $requestUrl;
+        $fullUrl = $siteUrl . $requestUrl;
 
         $meta['canonicalUrl'] = $fullUrl;
 
@@ -707,7 +732,7 @@ class SeomaticService extends BaseApplicationComponent
         $this->addIdentityHelpers($helper, $identity);
         $this->addCreatorHelpers($helper, $creator);
 
-        $this->setSocialForMeta($meta, $siteMeta, $social, $helper, $locale);
+        $this->setSocialForMeta($meta, $siteMeta, $social, $helper, $identity, $locale);
 
 /* -- Get rid of variables we don't want to expose */
 
@@ -1282,6 +1307,7 @@ class SeomaticService extends BaseApplicationComponent
         $social['twitterHandle'] = $settings['twitterHandle'];
         $social['facebookHandle'] = $settings['facebookHandle'];
         $social['facebookProfileId'] = $settings['facebookProfileId'];
+        $social['facebookAppId'] = $settings['facebookAppId'];
         $social['linkedInHandle'] = $settings['linkedInHandle'];
         $social['googlePlusHandle'] = $settings['googlePlusHandle'];
         $social['youtubeHandle'] = $settings['youtubeHandle'];
@@ -1319,7 +1345,7 @@ class SeomaticService extends BaseApplicationComponent
         $creator['siteCreatorSubType'] = $settings['siteCreatorSubType'];
         $creator['siteCreatorSpecificType'] = $settings['siteCreatorSpecificType'];
 
-/* -- Handle migrating the old way of storing siteCreatorType */
+/* -- Handle migrating the old way of storing siteCreatorType 
 
         if (($creator['siteCreatorType'] != "Organization") && ($creator['siteCreatorType'] != "Person"))
         {
@@ -1332,7 +1358,7 @@ class SeomaticService extends BaseApplicationComponent
             $creator['siteCreatorSpecificType'] = $creator['siteCreatorSubType'];
             $creator['siteCreatorSubType'] = "LocalBusiness";
         }
-
+*/
         $creator['genericCreatorName'] = $settings['genericCreatorName'];
         $creator['genericCreatorAlternateName'] = $settings['genericCreatorAlternateName'];
         $creator['genericCreatorDescription'] = $settings['genericCreatorDescription'];
@@ -1984,11 +2010,10 @@ class SeomaticService extends BaseApplicationComponent
         $shouldTruncate = craft()->config->get("truncateTitleTags", "seomatic");
         if ($shouldTruncate)
         {
-            // We use 69 because we append a … character when strings are truncated, so the real length is 70
             if ($seomaticSiteMeta['siteSeoTitlePlacement'] == "none")
-                $titleLength = 69;
+                $titleLength = 70;
             else
-                $titleLength = (69 - strlen(" | ") - strlen($seomaticSiteMeta['siteSeoName']));
+                $titleLength = (70 - strlen(" | ") - strlen($seomaticSiteMeta['siteSeoName']));
         }
         else
         {
@@ -2096,12 +2121,12 @@ class SeomaticService extends BaseApplicationComponent
 
     private function _sanitizeArray(&$theArray)
     {
-        foreach ($theArray as $key => $value)
+        foreach ($theArray as $key => &$value)
         {
             if (is_string($value))
             {
                 $value = craft()->config->parseEnvironmentString($value);
-                $value= strip_tags($value);
+                $value = strip_tags($value);
                 if ($key == 'email')
                     $value = $this->encodeEmailAddress($value);
                 else
@@ -2264,7 +2289,10 @@ class SeomaticService extends BaseApplicationComponent
             if (substr($theString, -1) == ',')
                 $theString = rtrim($theString, ',');
             else
-                $theString = $theString . "…";
+            {
+                if (strlen($theString) < $desiredLength)
+                    $theString = $theString . "…";
+            }
         }
 
         return $theString;
