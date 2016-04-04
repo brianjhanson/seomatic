@@ -67,9 +67,9 @@ class SeomaticService extends BaseApplicationComponent
             }
         else
             {
-            $oldPath = craft()->path->getTemplatesPath();
+            $oldPath = method_exists(craft()->templates, 'getTemplatesPath') ? craft()->templates->getTemplatesPath() : craft()->path->getTemplatesPath();
             $newPath = craft()->path->getPluginsPath().'seomatic/templates';
-            craft()->path->setTemplatesPath($newPath);
+            method_exists(craft()->templates, 'setTemplatesPath') ? craft()->templates->setTemplatesPath($newPath) : craft()->path->setTemplatesPath($newPath);
 
 /* -- Render the core template */
 
@@ -84,7 +84,7 @@ class SeomaticService extends BaseApplicationComponent
             else
                 $htmlText = craft()->templates->render($templateName);
 
-            craft()->path->setTemplatesPath($oldPath);
+            method_exists(craft()->templates, 'setTemplatesPath') ? craft()->templates->setTemplatesPath($oldPath) : craft()->path->setTemplatesPath($oldPath);
             }
         return $htmlText;
     } /* -- render */
@@ -126,9 +126,9 @@ class SeomaticService extends BaseApplicationComponent
     public function renderJSONLD($object=array(), $isPreview=false)
     {
         $vars = array("object" => $object);
-        $oldPath = craft()->path->getTemplatesPath();
+        $oldPath = method_exists(craft()->templates, 'getTemplatesPath') ? craft()->templates->getTemplatesPath() : craft()->path->getTemplatesPath();
         $newPath = craft()->path->getPluginsPath().'seomatic/templates';
-        craft()->path->setTemplatesPath($newPath);
+        method_exists(craft()->templates, 'setTemplatesPath') ? craft()->templates->setTemplatesPath($newPath) : craft()->path->setTemplatesPath($newPath);
 
 /* -- Render the core template */
 
@@ -138,7 +138,7 @@ class SeomaticService extends BaseApplicationComponent
         else
             $htmlText = craft()->templates->render($templateName, $vars);
 
-        craft()->path->setTemplatesPath($oldPath);
+        method_exists(craft()->templates, 'setTemplatesPath') ? craft()->templates->setTemplatesPath($oldPath) : craft()->path->setTemplatesPath($oldPath);
 
         return $htmlText;
     } /* -- renderJSONLD */
@@ -149,16 +149,16 @@ class SeomaticService extends BaseApplicationComponent
 
     public function renderDisplayPreview($templateName="", $metaVars)
     {
-        $oldPath = craft()->path->getTemplatesPath();
+        $oldPath = method_exists(craft()->templates, 'getTemplatesPath') ? craft()->templates->getTemplatesPath() : craft()->path->getTemplatesPath();
         $newPath = craft()->path->getPluginsPath().'seomatic/templates';
-        craft()->path->setTemplatesPath($newPath);
+        method_exists(craft()->templates, 'setTemplatesPath') ? craft()->templates->setTemplatesPath($newPath) : craft()->path->setTemplatesPath($newPath);
 
 /* -- Render the SEOmatic display preview template */
 
         $this->sanitizeMetaVars($metaVars);
         $htmlText = craft()->templates->render($templateName, $metaVars);
 
-        craft()->path->setTemplatesPath($oldPath);
+        method_exists(craft()->templates, 'setTemplatesPath') ? craft()->templates->setTemplatesPath($oldPath) : craft()->path->setTemplatesPath($oldPath);
 
         return $htmlText;
     } /* -- renderDisplayPreview */
@@ -222,9 +222,9 @@ class SeomaticService extends BaseApplicationComponent
         $shouldRenderGA = craft()->config->get("renderGoogleAnalyticsScript", "seomatic");
         if (($shouldRenderGA) || ($isPreview))
         {
-            $oldPath = craft()->path->getTemplatesPath();
+            $oldPath = method_exists(craft()->templates, 'getTemplatesPath') ? craft()->templates->getTemplatesPath() : craft()->path->getTemplatesPath();
             $newPath = craft()->path->getPluginsPath().'seomatic/templates';
-            craft()->path->setTemplatesPath($newPath);
+            method_exists(craft()->templates, 'setTemplatesPath') ? craft()->templates->setTemplatesPath($newPath) : craft()->path->setTemplatesPath($newPath);
 
     /* -- Render the core template */
 
@@ -234,7 +234,7 @@ class SeomaticService extends BaseApplicationComponent
             else
                 $htmlText = craft()->templates->render($templateName, $metaVars);
 
-            craft()->path->setTemplatesPath($oldPath);
+            method_exists(craft()->templates, 'setTemplatesPath') ? craft()->templates->setTemplatesPath($oldPath) : craft()->path->setTemplatesPath($oldPath);
         }
         return $htmlText;
     } /* -- renderGoogleAnalytics */
@@ -270,9 +270,9 @@ class SeomaticService extends BaseApplicationComponent
         }
         else
         {
-            $oldPath = craft()->path->getTemplatesPath();
+            $oldPath = method_exists(craft()->templates, 'getTemplatesPath') ? craft()->templates->getTemplatesPath() : craft()->path->getTemplatesPath();
             $newPath = craft()->path->getPluginsPath().'seomatic/templates';
-            craft()->path->setTemplatesPath($newPath);
+            method_exists(craft()->templates, 'setTemplatesPath') ? craft()->templates->setTemplatesPath($newPath) : craft()->path->setTemplatesPath($newPath);
 
 /* -- Render the core template */
 
@@ -281,7 +281,7 @@ class SeomaticService extends BaseApplicationComponent
                 $templateName = $templateName . 'Preview';
             $htmlText = craft()->templates->render($templateName, $metaVars);
 
-            craft()->path->setTemplatesPath($oldPath);
+            method_exists(craft()->templates, 'setTemplatesPath') ? craft()->templates->setTemplatesPath($oldPath) : craft()->path->setTemplatesPath($oldPath);
         }
 
         return $htmlText;
@@ -326,9 +326,9 @@ class SeomaticService extends BaseApplicationComponent
         }
         else
         {
-            $oldPath = craft()->path->getTemplatesPath();
+            $oldPath = method_exists(craft()->templates, 'getTemplatesPath') ? craft()->templates->getTemplatesPath() : craft()->path->getTemplatesPath();
             $newPath = craft()->path->getPluginsPath().'seomatic/templates';
-            craft()->path->setTemplatesPath($newPath);
+            method_exists(craft()->templates, 'setTemplatesPath') ? craft()->templates->setTemplatesPath($newPath) : craft()->path->setTemplatesPath($newPath);
 
 /* -- Render the core template */
 
@@ -337,7 +337,7 @@ class SeomaticService extends BaseApplicationComponent
                 $templateName = $templateName . 'Preview';
             $htmlText = craft()->templates->render($templateName, $metaVars);
 
-            craft()->path->setTemplatesPath($oldPath);
+            method_exists(craft()->templates, 'setTemplatesPath') ? craft()->templates->setTemplatesPath($oldPath) : craft()->path->setTemplatesPath($oldPath);
         }
 
         return $htmlText;
@@ -389,7 +389,7 @@ class SeomaticService extends BaseApplicationComponent
                         if ($value->elementType == "Seomatic_FieldMeta")
                         {
                             $entryMeta = $value;
-                            $entryMetaUrl = $element->url;
+                            $entryMetaUrl = $this->getFullyQualifiedUrl($element->url);
 
     /* -- Swap in any SEOmatic fields that are pulling from other entry fields */
 
@@ -404,7 +404,14 @@ class SeomaticService extends BaseApplicationComponent
 
                                 case 'custom':
                                     $entryMeta['seoTitle'] = craft()->config->parseEnvironmentString($entryMeta['seoTitle']);
-                                    $entryMeta['seoTitle'] = craft()->templates->renderObjectTemplate($entryMeta['seoTitle'], $element);
+                                    try
+                                    {
+                                        $entryMeta['seoTitle'] = craft()->templates->renderObjectTemplate($entryMeta['seoTitle'], $element);
+                                    }
+                                    catch (Exception $e)
+                                    {
+                                        SeomaticPlugin::log("Template error in the `seoTitle` field.", LogLevel::Info, true);
+                                    }
                                 break;
                             }
 
@@ -419,8 +426,15 @@ class SeomaticService extends BaseApplicationComponent
 
                                 case 'custom':
                                     $entryMeta['seoDescription'] = craft()->config->parseEnvironmentString($entryMeta['seoDescription']);
-                                    $entryMeta['seoDescription'] = craft()->templates->renderObjectTemplate($entryMeta['seoDescription'], $element);
-                                break;
+                                    try
+                                    {
+                                        $entryMeta['seoDescription'] = craft()->templates->renderObjectTemplate($entryMeta['seoDescription'], $element);
+                                    }
+                                    catch (Exception $e)
+                                    {
+                                        SeomaticPlugin::log("Template error in the `seoDescription` field.", LogLevel::Info, true);
+                                    }
+                               break;
                             }
 
                             switch ($entryMeta['seoKeywordsSource'])
@@ -442,8 +456,15 @@ class SeomaticService extends BaseApplicationComponent
 
                                 case 'custom':
                                     $entryMeta['seoKeywords'] = craft()->config->parseEnvironmentString($entryMeta['seoKeywords']);
-                                    $entryMeta['seoKeywords'] = craft()->templates->renderObjectTemplate($entryMeta['seoKeywords'], $element);
-                                break;
+                                    try
+                                    {
+                                        $entryMeta['seoKeywords'] = craft()->templates->renderObjectTemplate($entryMeta['seoKeywords'], $element);
+                                    }
+                                    catch (Exception $e)
+                                    {
+                                        SeomaticPlugin::log("Template error in the `seoDescription` field.", LogLevel::Info, true);
+                                    }
+                               break;
                             }
 
                             switch ($entryMeta['seoImageIdSource'])
@@ -556,7 +577,7 @@ class SeomaticService extends BaseApplicationComponent
                 $meta['seoImageId'] = $entryMeta->seoImageId[0];
             else
                 $meta['seoImageId'] = null;
-            $meta['canonicalUrl'] =  $entryMetaUrl;
+            $meta['canonicalUrl'] =  $this->getFullyQualifiedUrl($entryMetaUrl);
 
             $meta['twitterCardType'] = $entryMeta->twitterCardType;
             if (!$meta['twitterCardType'])
@@ -575,7 +596,7 @@ class SeomaticService extends BaseApplicationComponent
             {
                 $image = craft()->assets->getFileById($entryMeta['seoImageId']);
                 if ($image)
-                    $meta['seoImage'] = $image->url;
+                    $meta['seoImage'] = $this->getFullyQualifiedUrl($image->url);
                 else
                     $meta['seoImage'] = '';
                 unset($meta['seoImageId']);
@@ -699,22 +720,15 @@ class SeomaticService extends BaseApplicationComponent
 
 /* -- Get a full qualified URL for the current request */
 
-        $siteUrl = craft()->getSiteUrl();
-        $requestUrl = craft()->request->url;
-        if (($siteUrl[strlen($siteUrl) -1] == '/') && ($requestUrl[0] == '/'))
-        {
-            $siteUrl = rtrim($siteUrl, '/');
-        }
-        $fullUrl = $siteUrl . $requestUrl;
-
-        $meta['canonicalUrl'] = $fullUrl;
+        $requestUrl = UrlHelper::stripQueryString(craft()->request->url);
+        $meta['canonicalUrl'] = $this->getFullyQualifiedUrl($requestUrl);
 
 /* -- Merge the meta with the global meta */
 
         $globalMeta['seoTitle'] = $siteMeta['siteSeoTitle'];
         $globalMeta['seoDescription'] = $siteMeta['siteSeoDescription'];
         $globalMeta['seoKeywords'] = $siteMeta['siteSeoKeywords'];
-        $globalMeta['seoImage'] = $siteMeta['siteSeoImage'];
+        $globalMeta['seoImage'] = $this->getFullyQualifiedUrl($siteMeta['siteSeoImage']);
         $globalMeta['twitterCardType'] = $siteMeta['siteTwitterCardType'];
         $globalMeta['openGraphType'] = $siteMeta['siteOpenGraphType'];
         $globalMeta['robots'] = $siteMeta['siteRobots'];
@@ -955,7 +969,7 @@ class SeomaticService extends BaseApplicationComponent
         {
             $image = craft()->assets->getFileById($siteMeta['siteSeoImageId']);
             if ($image)
-                $siteMeta['siteSeoImage'] = $image->url;
+                $siteMeta['siteSeoImage'] = $this->getFullyQualifiedUrl($image->url);
             else
                 $siteMeta['siteSeoImage'] = '';
         }
@@ -1018,11 +1032,11 @@ class SeomaticService extends BaseApplicationComponent
         $identity['genericOwnerName'] = $settings['genericOwnerName'];
         $identity['genericOwnerAlternateName'] = $settings['genericOwnerAlternateName'];
         $identity['genericOwnerDescription'] = $settings['genericOwnerDescription'];
-        $identity['genericOwnerUrl'] = $settings['genericOwnerUrl'];
+        $identity['genericOwnerUrl'] = $this->getFullyQualifiedUrl($settings['genericOwnerUrl']);
         $identity['genericOwnerImageId'] = $settings['genericOwnerImageId'];
         $image = craft()->assets->getFileById($settings['genericOwnerImageId']);
         if ($image)
-            $identity['genericOwnerImage'] = $image->url;
+            $identity['genericOwnerImage'] = $this->getFullyQualifiedUrl($image->url);
         else
             $identity['genericOwnerImage'] = '';
         $identity['genericOwnerTelephone'] = $settings['genericOwnerTelephone'];
@@ -1082,8 +1096,8 @@ class SeomaticService extends BaseApplicationComponent
         $identity['corporationOwnerTickerSymbol'] = $settings['corporationOwnerTickerSymbol'];
 
         $identity['restaurantOwnerServesCuisine'] = $settings['restaurantOwnerServesCuisine'];
-        $identity['restaurantOwnerMenuUrl'] = $settings['restaurantOwnerMenuUrl'];
-        $identity['restaurantOwnerReservationsUrl'] = $settings['restaurantOwnerReservationsUrl'];
+        $identity['restaurantOwnerMenuUrl'] = $this->getFullyQualifiedUrl($settings['restaurantOwnerMenuUrl']);
+        $identity['restaurantOwnerReservationsUrl'] = $this->getFullyQualifiedUrl($settings['restaurantOwnerReservationsUrl']);
 
         $result = $identity;
 
@@ -1342,10 +1356,13 @@ class SeomaticService extends BaseApplicationComponent
         $creator['locale'] = $settings['locale'];
 
         $creator['siteCreatorType'] = ucfirst($settings['siteCreatorType']);
+        $creator['siteCreatorSubType'] = "";
+        $creator['siteCreatorSpecificType'] = "";
+
+/* -- Handle migrating the old way of storing siteCreatorType 
         $creator['siteCreatorSubType'] = $settings['siteCreatorSubType'];
         $creator['siteCreatorSpecificType'] = $settings['siteCreatorSpecificType'];
 
-/* -- Handle migrating the old way of storing siteCreatorType 
 
         if (($creator['siteCreatorType'] != "Organization") && ($creator['siteCreatorType'] != "Person"))
         {
@@ -1362,11 +1379,11 @@ class SeomaticService extends BaseApplicationComponent
         $creator['genericCreatorName'] = $settings['genericCreatorName'];
         $creator['genericCreatorAlternateName'] = $settings['genericCreatorAlternateName'];
         $creator['genericCreatorDescription'] = $settings['genericCreatorDescription'];
-        $creator['genericCreatorUrl'] = $settings['genericCreatorUrl'];
+        $creator['genericCreatorUrl'] = $this->getFullyQualifiedUrl($settings['genericCreatorUrl']);
         $creator['genericCreatorImageId'] = $settings['genericCreatorImageId'];
         $image = craft()->assets->getFileById($settings['genericCreatorImageId']);
         if ($image)
-            $creator['genericCreatorImage'] = $image->url;
+            $creator['genericCreatorImage'] = $this->getFullyQualifiedUrl($image->url);
         else
             $creator['genericCreatorImage'] = '';
         $creator['genericCreatorTelephone'] = $settings['genericCreatorTelephone'];
@@ -1390,8 +1407,8 @@ class SeomaticService extends BaseApplicationComponent
         $creator['corporationCreatorTickerSymbol'] = $settings['corporationCreatorTickerSymbol'];
 
         $identity['restaurantCreatorServesCuisine'] = $settings['restaurantCreatorServesCuisine'];
-        $identity['restaurantCreatorMenuUrl'] = $settings['restaurantCreatorMenuUrl'];
-        $identity['restaurantCreatorReservationsUrl'] = $settings['restaurantCreatorReservationsUrl'];
+        $identity['restaurantCreatorMenuUrl'] = $this->getFullyQualifiedUrl($settings['restaurantCreatorMenuUrl']);
+        $identity['restaurantCreatorReservationsUrl'] = $this->getFullyQualifiedUrl($settings['restaurantCreatorReservationsUrl']);
 
         $creator['genericCreatorHumansTxt'] = $settings['genericCreatorHumansTxt'];
 
@@ -1419,11 +1436,12 @@ class SeomaticService extends BaseApplicationComponent
 /* -- Settings generic to all Creator types */
 
         $creatorJSONLD['type'] = ucfirst($creator['siteCreatorType']);
+/*
         if ($creator['siteCreatorSubType'])
             $creatorJSONLD['type'] = $creator['siteCreatorSubType'];
         if ($creator['siteCreatorSpecificType'])
             $creatorJSONLD['type'] = $creator['siteCreatorSpecificType'];
-
+*/
         $creatorJSONLD['name'] = $creator['genericCreatorName'];
         $creatorJSONLD['alternateName'] = $creator['genericCreatorAlternateName'];
         $creatorJSONLD['description'] = $creator['genericCreatorDescription'];
@@ -1591,7 +1609,7 @@ class SeomaticService extends BaseApplicationComponent
         $webSiteJSONLD['type'] = "WebSite";
         $webSiteJSONLD['name'] = $metaVars['seomaticSiteMeta']['siteSeoName'];
         $webSiteJSONLD['description'] = $metaVars['seomaticSiteMeta']['siteSeoDescription'];
-        $webSiteJSONLD['url'] = craft()->getSiteUrl();
+        $webSiteJSONLD['url'] = $this->getFullyQualifiedUrl(craft()->getSiteUrl());
         if (isset($metaVars['seomaticSiteMeta']['siteSeoImage']))
             $webSiteJSONLD['image'] = $metaVars['seomaticSiteMeta']['siteSeoImage'];
 
@@ -1662,7 +1680,7 @@ class SeomaticService extends BaseApplicationComponent
                 {
                     $image = craft()->assets->getFileById($meta['seoImageId']);
                     if ($image)
-                        $meta['seoImage'] = $image->url;
+                        $meta['seoImage'] = $this->getFullyQualifiedUrl($image->url);
                     else
                         $meta['seoImage'] = '';
                     unset($meta['seoImageId']);
@@ -2007,24 +2025,29 @@ class SeomaticService extends BaseApplicationComponent
 
 /* -- Truncate seoTitle, seoDescription, and seoKeywords to recommended values */
 
-        $shouldTruncate = craft()->config->get("truncateTitleTags", "seomatic");
-        if ($shouldTruncate)
+        $titleLength = 0;
+        if (craft()->config->get("truncateTitleTags", "seomatic"))
         {
+            $titleLength = craft()->config->get("maxTitleLength", "seomatic");
             if ($seomaticSiteMeta['siteSeoTitlePlacement'] == "none")
-                $titleLength = 70;
+                $titleLength = $titleLength;
             else
-                $titleLength = (70 - strlen(" | ") - strlen($seomaticSiteMeta['siteSeoName']));
-        }
-        else
-        {
-            $titleLength = 200;
+                $titleLength = ($titleLength - strlen(" | ") - strlen($seomaticSiteMeta['siteSeoName']));
         }
 
-        $vars = array('seoTitle' => $titleLength, 'seoDescription' => 160, 'seoKeywords' => 200);
+        $descriptionLength = 0;
+        if (craft()->config->get("truncateDescriptionTags", "seomatic"))
+            $descriptionLength = craft()->config->get("maxDescriptionLength", "seomatic");
+
+        $keywordsLength = 0;
+        if (craft()->config->get("truncateKeywordsTags", "seomatic"))
+            $keywordsLength = craft()->config->get("maxKeywordsLength", "seomatic");
+
+        $vars = array('seoTitle' => $titleLength, 'seoDescription' => $descriptionLength, 'seoKeywords' => $keywordsLength);
 
         foreach ($vars as $key => $value)
         {
-            if (isset($seomaticMeta[$key]))
+            if (isset($seomaticMeta[$key]) && $value)
             {
                 $seomaticMeta[$key] = $this->truncateStringOnWord($seomaticMeta[$key], $value);
             }
@@ -2045,6 +2068,38 @@ class SeomaticService extends BaseApplicationComponent
         $metaVars['seomaticCreator'] = $seomaticCreator;
 
     } /* -- sanitizeMetaVars */
+
+/* --------------------------------------------------------------------------------
+    Get a fully qualified URL based on the siteUrl, if no scheme/host is present
+-------------------------------------------------------------------------------- */
+
+public function getFullyQualifiedUrl($url)
+{
+    $result = $url;
+    if (!isset($result) || $result == "")
+        return $result;
+    $srcUrlParts = parse_url($result);
+    if (isset($srcUrlParts['scheme']) && isset($srcUrlParts['host']))
+    {
+/* -- The URL is already a fully qualfied URL, do nothing */
+    }
+    else
+    {
+        $siteUrl = craft()->getSiteUrl();
+        $urlParts = parse_url($siteUrl);
+        if (isset($urlParts['scheme']) && isset($urlParts['host']))
+            $siteUrl = $urlParts['scheme'] . "://" . $urlParts['host'] . "/";
+        else
+            $siteUrl = "/";
+        if (($siteUrl[strlen($siteUrl) -1] == '/') && ($result[0] == '/'))
+        {
+            $siteUrl = rtrim($siteUrl, '/');
+        }
+        $result = $siteUrl . $result;
+    }
+
+    return $result;
+} /* -- getFullyQualifiedUrl */
 
 /* --------------------------------------------------------------------------------
     Extract the most important words from the passed in text via TextRank
@@ -2127,8 +2182,10 @@ class SeomaticService extends BaseApplicationComponent
             {
                 $value = craft()->config->parseEnvironmentString($value);
                 $value = strip_tags($value);
-                if ($key == 'email')
+                if ($key === 'email')
                     $value = $this->encodeEmailAddress($value);
+                elseif ($key === 'url')
+                    $value = $this->getFullyQualifiedUrl($value);
                 else
                     $value = htmlspecialchars($value, ENT_COMPAT | ENT_HTML401, 'UTF-8', false);
                 $theArray[$key] = $value;

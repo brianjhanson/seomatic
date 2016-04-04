@@ -791,6 +791,21 @@ All three of these methods accomplish the same thing:
 
 Google can still properly decode email addresses that are ordinal-encoded, it's still readable by humans when displayed, but it prevents some bots from recognizing it as an email address.
 
+### getFullyQualifiedUrl()
+
+All three of these methods accomplish the same thing:
+
+	{# Get a fully qualified URL based on the siteUrl using the 'getFullyQualifiedUrl' function #}
+    {{ getFullyQualifiedUrl( URLPATH ) }}
+    
+	{# Get a fully qualified URL based on the siteUrl using the 'getFullyQualifiedUrl' filter #}
+    {{ URLPATH | getFullyQualifiedUrl }}
+    
+	{# Get a fully qualified URL based on the siteUrl using the 'getFullyQualifiedUrl' variable #}
+    {% do craft.seomatic.getFullyQualifiedUrl( URLPATH ) %}
+
+**URLPATH** is either a URL (in which case it is just returned) or a path, in which case it is combined with the `siteUrl` and returned.
+
 ## SEOmatic Site Meta Twig Variables
 
 SEOmatic populates your templates with the following global variables for Site Meta:
@@ -1584,6 +1599,30 @@ Some things to do, and ideas for potential features:
 * [feature] Provide Redirect functionality.  Yes, it's SEO-related, but seems like it might be better to keep SEOmatic focused (?)
 
 ## Changelog
+
+### 1.1.10 -- 2016.03.29
+
+* [Fixed] Fixed API 'deprecation' errors with Craft 2.6.2778 or later
+* [Improved] Added more controls for the default title, description, and keywords values in config.php
+* [Improved] Updated the README.md
+
+### 1.1.9 -- 2016.03.17
+
+* [Fixed] Fixed a typo in the Preview SEO Tags window
+* [Fixed] We now handle Twig errors in SEOmatic FieldType fields gracefully
+* [Improved] Query strings are now stripped from the canonical URL
+* [Improved] All things that should be fully qualified URLs are now fully qualified URLs, even if you specify them via path or relative URL
+* [Improved] Updated the README.md
+
+### 1.1.8 -- 2016.03.10
+
+* [Improved] In the SEOmatic FieldType, moved default setting to prepValue() so it'll work if the entries are all re-saved via `resaveAllElements`
+* [Added] Added getFullyQualifiedUrl() helper as a Twig function/filter and as a variable for Twig templating
+* [Improved] Turn things that should be fully qualified URLs into fully qualified URLs, such as the canonicalUrl, seoImage, and anything with `url` as a key
+* [Improved] Added seoImage() and seoImageID() to the model so you can get at those values from, say, `entry.seoField.seoImage()`
+* [Fixed] canonicalUrl fixes for multilingual sites
+* [Fixed] Fixed errant ordinal encoding of the first element in a sequential array
+* [Improved] Updated the README.md
 
 ### 1.1.7 -- 2016.03.04
 

@@ -56,6 +56,7 @@ class SeomaticTwigExtension extends \Twig_Extension
             'truncateStringOnWord' => new \Twig_Filter_Method($this, 'truncateStringOnWord'),
             'encodeEmailAddress' => new \Twig_Filter_Method($this, 'encodeEmailAddress'),
             'extractTextFromMatrix' => new \Twig_Filter_Method($this, 'extractTextFromMatrix'),
+            'getFullyQualifiedUrl' => new \Twig_Filter_Method($this, 'getFullyQualifiedUrl'),
         );
     }
 
@@ -72,6 +73,7 @@ class SeomaticTwigExtension extends \Twig_Extension
             'truncateStringOnWord' => new \Twig_Function_Method($this, 'truncateStringOnWord'),
             'encodeEmailAddress' => new \Twig_Function_Method($this, 'encodeEmailAddress'),
             'extractTextFromMatrix' => new \Twig_Function_Method($this, 'extractTextFromMatrix'),
+            'getFullyQualifiedUrl' => new \Twig_Function_Method($this, 'getFullyQualifiedUrl'),
         );
     }
 
@@ -174,6 +176,17 @@ class SeomaticTwigExtension extends \Twig_Extension
     } /* -- extractTextFromMatrix */
 
 /* --------------------------------------------------------------------------------
+    Get a fully qualified URL based on the siteUrl, if no scheme/host is present
+-------------------------------------------------------------------------------- */
+
+    public function getFullyQualifiedUrl($url)
+    {
+        $result = craft()->seomatic->getFullyQualifiedUrl($url);
+
+        return $result;
+    } /* -- getFullyQualifiedUrl */
+
+/* --------------------------------------------------------------------------------
     Get the current template path
 -------------------------------------------------------------------------------- */
 
@@ -181,7 +194,7 @@ class SeomaticTwigExtension extends \Twig_Extension
     {
         $result = "";
         $currentTemplate = craft()->templates->getRenderingTemplate();
-        $templatesPath = craft()->path->templatesPath;
+        $templatesPath = method_exists(craft()->templates, 'getTemplatesPath') ? craft()->templates->getTemplatesPath() : craft()->path->getTemplatesPath();
 
         $path_parts = pathinfo($currentTemplate);
 
